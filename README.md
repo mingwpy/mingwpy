@@ -1,2 +1,3 @@
-# mingwpy-wheel-builder
-setup the mingwpy toolchain as wheel package
+# mingwpy
+
+Setup the mingwpy toolchain as wheel package
