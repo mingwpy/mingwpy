@@ -12,7 +12,12 @@ Now install the following tools and programs with the help of pacman:
 
 Now make sure the mingw-w64 toolchain supplied by pacman is NOT installed:
 
-`$ gcc -v` should show the following error: `bash: gcc: command not found`
+`gcc -v` should show the following error: `bash: gcc: command not found`
+
+Clone the custimized mingw-builds scripts:
+
+`git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git`
+`cd mingw-builds`
 
 The mingw-builds build script is responsible to download an approbriate toolchain needed for  the gcc build process.
 
