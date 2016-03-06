@@ -7,17 +7,20 @@ Install and update a fresh msys2 from https://msys2.github.io according to the i
 *NEVER* use an installation path for msys2 containing SPACES or other special characters!
 
 Now install the following tools and programs with the help of pacman:
-
-`pacman -Sy --noconfirm git svn zip tar autoconf make libtool automake p7zip patch bison gettext-devel wget sshpass texinfo`
+```
+pacman -Sy --noconfirm git svn zip tar autoconf make libtool automake p7zip patch\
+bison gettext-devel wget sshpass texinfo
+```
 
 Now make sure the mingw-w64 toolchain supplied by pacman is NOT installed:
 
 `gcc -v` should show the following error: `bash: gcc: command not found`
 
 Clone the custimized mingw-builds scripts:
-
-`git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git`
-`cd mingw-builds`
+```
+git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git
+cd mingw-builds
+```
 
 The mingw-builds build script is responsible to download an approbriate toolchain needed for  the gcc build process.
 
