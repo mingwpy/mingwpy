@@ -1,11 +1,6 @@
-*mingwpy* is a modification of [Mingw-w64](http://mingw-w64.org) project,
-which in turn is a modification of [MinGW](http://mingw.org/) with 64bit
-support that [was not merged](https://sourceforge.net/p/mingw-w64/wiki2/History/)
-upstream.
+*mingwpy* is a customized version of the [GNU toolchain](https://en.wikipedia.org/wiki/GNU_toolchain) toolchain based on the [Mingw-w64](http://mingw-w64.org) and the [mingw-builds](https://github.com/niXman/mingw-builds) project.
 
-The goal of *mingwpy* project is to provide free toolchain for building
-Python extensions on Windows platform, and make those extensions binary
-compatible with Python compiled with native Visual Studio.
+The goal of *mingwpy* project is to provide a free toolchain for building Python extensions for  Windows OS, and make those extensions compatible with CPython compiled with native Visual Studio.
 
  * Documentation: https://mingwpy.github.io/
  * Discussions: https://groups.google.com/forum/#!forum/mingwpy
