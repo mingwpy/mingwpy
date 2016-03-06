@@ -4,5 +4,5 @@ The goal of *mingwpy* project is to provide a free toolchain for building Python
 
  * Documentation: https://mingwpy.github.io/
  * Discussions: https://groups.google.com/forum/#!forum/mingwpy
- * Development: https://github.com/mingwpy/mingw-builds/blob/mingwpy-dev/mingwpy_readme.md
+ * Development: https://github.com/mingwpy/mingwpy/blob/master/mingwpy_builds_readme.md
 
