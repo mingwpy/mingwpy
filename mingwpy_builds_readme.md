@@ -33,4 +33,12 @@ The mingw-builds build script is responsible to download an approbriate toolchai
 
 `./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' --mtune-x32='generic' --buildroot=/tmp/i686 --rev=201603 --rt-version=trunk --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --bootstrap --no-multilib --bin-compress`
 
-The build process can be accelerated with the flag`--jobs=N`. The number `N` given should be the number of cores avaiilabe for the build process.
+The build process can be accelerated with the flag`--jobs=N`. The number `N` given should be the number of cores 
+availabe for the build process.
+
+The toolchains are fully portable and can be unpacked without admin rights or other installation hussles. As some 
+build systems doesn't like paths with spaces or other special characters it is recommended to avoid such paths. 
+To use the toolchain it is necessary to find the executables in the `bin` folder. This can be achieved with 
+extending the `PATH` environment variable 
+
+To use the toolchains for CPython please perform the step described in [readme_specs.md](https://github.com/mingwpy/mingwpy/blob/master/specs/readme_specs.md).
