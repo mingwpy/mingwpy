@@ -41,7 +41,7 @@ cc1 -E %{traditional|traditional-cpp:-traditional-cpp}
 -mincoming-stack-boundary=2 -D__MSVCRT_VERSION__=0x0900
 
 *link_gcc_c_sequence:
-%G %L %G
+%G %L %G %{shared|mdll: msvcr90.dll.res%s} %{!shared: %{!mdll: msvcr90.exe.res%s}}
 
 *link_ssp:
 %{fstack-protector|fstack-protector-all|fstack-protector-strong|fstack-protector-explicit:-lssp_nonshared -lssp}
