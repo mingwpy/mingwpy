@@ -5,8 +5,7 @@ The goal of *mingwpy* project is to provide a free toolchain for building Python
  * Documentation: https://mingwpy.github.io/
  * Discussions: https://groups.google.com/forum/#!forum/mingwpy
 
-## Prerequisites
-### Install MSYS2 for mingw-builds
+### Prerequisites: Install MSYS2 for mingw-builds
 
 Install https://msys2.github.io/ "Unix environment" for Windows to be able
 to run `mingw-builds` scripts.
@@ -32,7 +31,7 @@ Clone customized `mingw-builds` scripts:
 The `mingw-builds` build scripts in turn download the rest of prerequisites
 for building GCC compiler.
 
-### Building 64-bit toolchain
+### Build 64-bit toolchain
 
 To download only (to build later):
 
@@ -47,7 +46,7 @@ To download and build all at once:
         --threads=win32 --exceptions=seh --enable-languages=c,c++,fortran --bootstrap \
         --no-multilib --bin-compress --jobs=4
 
-### Building 32-bit toolchain
+### Build 32-bit toolchain
 
 To download only (to build later):
 
@@ -69,5 +68,7 @@ The toolchains are fully portable and can be unpacked without admin rights or ot
 build systems doesn't like paths with spaces or other special characters it is recommended to avoid such paths. 
 To use the toolchain it is necessary to find the executables in the `bin` folder. This can be achieved with 
 extending the `PATH` environment variable 
+
+### Using new toolchain with CPython
 
 To use the toolchain for CPython please perform the step described in [readme_specs.md](https://github.com/mingwpy/mingwpy/blob/master/specs/readme_specs.md).
