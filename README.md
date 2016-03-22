@@ -79,7 +79,7 @@ build systems doesn't like paths with spaces or other special characters it is r
 To use the toolchain it is necessary to find the executables in the `bin` folder. This can be achieved with 
 extending the `PATH` environment variable 
 
-#### Configuring toolchain for CPython version
+#### Configuring the toolchain for a specific version of CPython
 
 The toolchain needs to know which version of Visual Studio to target. Each Python is compiled with different VS version, so you need to tune the toolchain by copying appropriate spec files, see
 [readme_specs.md](https://github.com/mingwpy/mingwpy/blob/master/specs/readme_specs.md).
