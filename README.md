@@ -13,11 +13,6 @@ Experimental builds of mingwpy for Python 2.7 and 3.4 are available for testing 
 
 Note: [Python 3.5 is not supported yet](https://mingwpy.github.io/issues.html#choice-of-msvc-runtime).
 
-### Using new toolchain with CPython
-
-To use the toolchain for CPython, see
-[readme_specs.md](https://github.com/mingwpy/mingwpy/blob/master/specs/readme_specs.md).
-
 ### Building mingwpy yourself
 
 #### Prerequisites: Install MSYS2 for mingw-builds
@@ -83,3 +78,9 @@ The toolchains are fully portable and can be unpacked without admin rights or ot
 build systems doesn't like paths with spaces or other special characters it is recommended to avoid such paths. 
 To use the toolchain it is necessary to find the executables in the `bin` folder. This can be achieved with 
 extending the `PATH` environment variable 
+
+#### Configuring toolchain for CPython version
+
+The toolchain needs to know which version of Visual Studio to target. Each Python is compiled with different VS version, so you need to tune the toolchain by copying appropriate spec files, see
+[readme_specs.md](https://github.com/mingwpy/mingwpy/blob/master/specs/readme_specs.md).
+
