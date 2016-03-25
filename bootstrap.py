@@ -398,11 +398,20 @@ if __name__ == '__main__':
   print('---[ configure MSYS2 ]---')
   MSYS2 = LOOT + '/msys32/usr/bin'
   def bash(command):
-    run(MSYS2 + '/bash --login -c "{}"'.format(command))
+    return run(MSYS2 + '/bash --login -c "{}"'.format(command))
 
   # do first time setup
   bash('exit')
   # update pacman database
   bash('pacman -Sy')
   # install packages
-  bash('pacman -S --noconfirm autoconf')
+  res = bash('pacman -S --noconfirm autoconf')
+
+  # check that gcc is not installed
+  res = bash('gcc -v 2> /dev/null')
+  if res.retcode != 127:
+    sys.exit('check failed: gcc is installed')
+
+  print('')
+  print('---[ cloning custom mingw-build scripts ]---')
+  run('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
