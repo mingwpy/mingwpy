@@ -405,7 +405,7 @@ if __name__ == '__main__':
   # update pacman database
   bash('pacman -Sy')
   # install packages
-  res = bash('pacman -S --noconfirm autoconf')
+  res = bash('pacman -S --noconfirm git subversion tar zip p7zip make patch automake libtool bison gettext-devel wget sshpass texinfo')
 
   # check that gcc is not installed
   res = bash('gcc -v 2> /dev/null')
