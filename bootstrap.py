@@ -405,7 +405,7 @@ if __name__ == '__main__':
   # update pacman database
   bash('pacman -Sy')
   # install packages
-  res = bash('pacman -S --noconfirm git subversion tar zip p7zip make patch automake libtool bison gettext-devel wget sshpass texinfo')
+  res = bash('pacman -S --needed --noconfirm git subversion tar zip p7zip make patch automake libtool bison gettext-devel wget sshpass texinfo')
 
   # check that gcc is not installed
   res = bash('gcc -v 2> /dev/null')
@@ -418,6 +418,9 @@ if __name__ == '__main__':
 
   print('')
   print('---[ running 32-bit build ]---')
-  bash("""cd mingw-builds; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
+  cmd32bit = """cd mingw-builds; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
     --mtune-x32='generic' --buildroot=/tmp/i686 --rev=201603 --rt-version=trunk \
-    --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only""")
+    --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only"""
+  # on 32bit platforms it fails without this option
+  cmd32bit += " --no-multilib"
+  bash(cmd32bit)
