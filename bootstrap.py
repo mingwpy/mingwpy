@@ -56,8 +56,10 @@ filespec = [
     url='http://downloads.sourceforge.net/sevenzip/7za920.zip',
     check='7zip'
   ),
+]
 
-  # tools needed to build gcc and friends
+# tools needed to build gcc and friends
+filespec32 = filespec + [
   dict(
     filename='msys2-base-i686-20160205.tar.xz',
     hashsize='2aa85b8995c8ab6fb080e15c8ed8b1195d7fc0f1 45676948',
@@ -66,14 +68,26 @@ filespec = [
   ),
 ]
 
+# tools needed to build gcc and friends
+filespec64 = filespec + [
+  dict(
+    filename='msys2-base-x86_64-20160205.tar.xz',
+    hashsize='bd689438e6389064c0b22f814764524bb974ae5b 44942956',
+    url='https://prdownloads.sourceforge.net/msys2/msys2-base-x86_64-20160205.tar.xz',
+    check='msys64',
+  ),
+]
+
 
 # ------------------------------ Code ---
 
 # --- create .locally/ subdir ---
 import os
+import platform
 import sys
 
 PY3K = sys.version_info >= (3, 0)
+OS64BIT = platform.machine().endswith('64')
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 LOOT = os.path.join(ROOT, '.locally/')
@@ -338,7 +352,10 @@ if __name__ == '__main__':
 
   # --- helpers ---
 
-  MSYS2 = LOOT + '/msys32/usr/bin'
+  if OS64BIT:
+    MSYS2 = LOOT + '/msys64/usr/bin'
+  else:
+    MSYS2 = LOOT + '/msys32/usr/bin'
 
   def path2unix(path):
     """ convert Windows path "E:\path" to unix "/e/path" """
@@ -360,7 +377,11 @@ if __name__ == '__main__':
 
   print('---[ download dependencies ]---')
 
-  getsecure(LOOT, filespec)
+  if OS64BIT:
+    speccy = filespec64
+  else:
+    speccy = filespec32
+  getsecure(LOOT, speccy)
 
   print('---[ unpack dependencies ]---')
 
@@ -379,7 +400,7 @@ if __name__ == '__main__':
   cmd7zip = os.path.normpath(LOOT + '7zip/7za.exe')
 
   # unpacking everything else
-  for entry in filespec:
+  for entry in speccy:
     fname = entry['filename']
 
     targetdir = LOOT
@@ -448,8 +469,10 @@ if __name__ == '__main__':
   cmd32bit += """; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
     --mtune-x32='generic' --buildroot=/tmp/i686 --rev=201603 --rt-version=trunk \
     --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only"""
+
   # on 32bit platforms it fails without this option
-  cmd32bit += " --no-multilib"
+  if not OS64BIT:
+    cmd32bit += " --no-multilib"
 
   # set build directory to be different from $HOME/mingw-builds
   cmd32bit += " --buildroot=" + builddir
