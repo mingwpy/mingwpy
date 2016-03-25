@@ -414,4 +414,10 @@ if __name__ == '__main__':
 
   print('')
   print('---[ cloning custom mingw-build scripts ]---')
-  run('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
+  bash('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
+
+  print('')
+  print('---[ running 32-bit build ]---')
+  bash("""cd mingw-builds; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
+    --mtune-x32='generic' --buildroot=/tmp/i686 --rev=201603 --rt-version=trunk \
+    --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only""")
