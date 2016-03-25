@@ -416,6 +416,7 @@ if __name__ == '__main__':
   print('---[ cloning custom mingw-build scripts ]---')
   bash('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
 
+
   print('')
   print('---[ running 32-bit build ]---')
   cmd32bit = """cd mingw-builds; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
@@ -423,4 +424,9 @@ if __name__ == '__main__':
     --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only"""
   # on 32bit platforms it fails without this option
   cmd32bit += " --no-multilib"
+
+  # set build directory to be different from $HOME/mingw-builds
+  def unixcwd():
+    return '/' + os.getcwd()[0].lower() + os.getcwd()[2:].replace('\\', '/')
+  cmd32bit += " --buildroot=" + unixcwd() + '/build'
   bash(cmd32bit)
