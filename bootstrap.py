@@ -336,6 +336,28 @@ def run_capture_limited(command, maxlines=20000):
 
 if __name__ == '__main__':
 
+  # --- helpers ---
+
+  MSYS2 = LOOT + '/msys32/usr/bin'
+
+  def path2unix(path):
+    """ convert Windows path "E:\path" to unix "/e/path" """
+    return '/' + path[0].lower() + path[2:].replace('\\', '/')
+
+  def bash(command, capture=False, verbose=True):
+    """ run command inside MSYS2 environment.
+        bash always starts in $HOME directory """
+    cmd = MSYS2 + '/bash --login -c "{}"'.format(command)
+    if verbose:
+      print("BASH: " + cmd)
+    if capture:
+      return run_capture_limited(cmd)
+    else:
+      return run(cmd)
+
+  # /-- helpers ---
+
+
   print('---[ download dependencies ]---')
 
   getsecure(LOOT, filespec)
@@ -395,10 +417,7 @@ if __name__ == '__main__':
     # MSYS2 is sensitive to spaces in paths
     sys.exit('check failed: current path contains spaces')
 
-  print('---[ configure MSYS2 ]---')
-  MSYS2 = LOOT + '/msys32/usr/bin'
-  def bash(command):
-    return run(MSYS2 + '/bash --login -c "{}"'.format(command))
+  print('---[ configuring MSYS2 ]---')
 
   # do first time setup
   bash('exit')
@@ -414,19 +433,24 @@ if __name__ == '__main__':
 
   print('')
   print('---[ cloning custom mingw-build scripts ]---')
-  bash('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
-
+  run('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
 
   print('')
   print('---[ running 32-bit build ]---')
-  cmd32bit = """cd mingw-builds; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
+  print('Boot CWD: ' + os.getcwd())
+  print('Bash CWD: ' + bash('pwd', capture=True, verbose=False).output)
+
+  # calculating names to change working directory in MSYS2
+  builddir = path2unix(os.getcwd() + '/build')
+  workdir = path2unix(os.getcwd() + '/mingw-builds')
+
+  cmd32bit = "cd " + workdir
+  cmd32bit += """; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
     --mtune-x32='generic' --buildroot=/tmp/i686 --rev=201603 --rt-version=trunk \
     --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only"""
   # on 32bit platforms it fails without this option
   cmd32bit += " --no-multilib"
 
   # set build directory to be different from $HOME/mingw-builds
-  def unixcwd():
-    return '/' + os.getcwd()[0].lower() + os.getcwd()[2:].replace('\\', '/')
-  cmd32bit += " --buildroot=" + unixcwd() + '/build'
+  cmd32bit += " --buildroot=" + builddir
   bash(cmd32bit)
