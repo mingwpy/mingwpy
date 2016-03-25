@@ -221,6 +221,8 @@ def unzip(zippath, target, subdir=None, verbose=0):
 
 # from shellrun 2.0
 
+import subprocess
+
 class Result(object):
     def __init__(self, command=None, retcode=None, output=None):
         self.command = command or ''
@@ -229,6 +231,32 @@ class Result(object):
         self.success = False
         if retcode == 0:
             self.success = True
+
+def run(command):
+    """
+    Run `command` through shell and wait for it to complete.
+    stdin/stdout/stderr are shared with Python, so the output
+    is immediately visible and not captured. Returns Result
+    with command, retcode and success attributes.
+
+    - return code
+    - no stdout capture
+    - no stderr capture
+    - no deadlocks or MemoryError
+    - stdout, stderr and stdin are shared with Python process
+
+   ┌─────────┐             ┌────────┐                   ┌─────────┐
+   │  Parent │>─(stdin)─┬─>│ Python ├─────┬──(stdout)──>│  Parent │
+   │(console)│          │  │ script ├─────│┬─(stderr)──>|(console)│
+   └─────────┘          │  └────────┘     ││            └─────────┘
+                        │  ┌────────────┐ ││
+                        └─>│ Subprocess ├─┘│
+                           │  (shell)   ├──┘
+                           └────────────┘
+    """
+    process = subprocess.Popen(command, shell=True)
+    process.communicate()
+    return Result(command=command, retcode=process.returncode)
 
 def run_capture_limited(command, maxlines=20000):
     """
@@ -269,7 +297,6 @@ def run_capture_limited(command, maxlines=20000):
     """
 
     import collections
-    import subprocess
     import threading
 
     lines = collections.deque(maxlen=maxlines)
@@ -367,3 +394,15 @@ if __name__ == '__main__':
   if ' ' in os.getcwd():
     # MSYS2 is sensitive to spaces in paths
     sys.exit('check failed: current path contains spaces')
+
+  print('---[ configure MSYS2 ]---')
+  MSYS2 = LOOT + '/msys32/usr/bin'
+  def bash(command):
+    run(MSYS2 + '/bash --login -c "{}"'.format(command))
+
+  # do first time setup
+  bash('exit')
+  # update pacman database
+  bash('pacman -Sy')
+  # install packages
+  bash('pacman -S --noconfirm autoconf')
