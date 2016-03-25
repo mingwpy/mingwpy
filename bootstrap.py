@@ -62,7 +62,7 @@ filespec = [
     filename='msys2-base-i686-20160205.tar.xz',
     hashsize='2aa85b8995c8ab6fb080e15c8ed8b1195d7fc0f1 45676948',
     url='https://prdownloads.sourceforge.net/msys2/msys2-base-i686-20160205.tar.xz',
-    check='msus2',
+    check='msys32',
   ),
 ]
 
@@ -360,3 +360,10 @@ if __name__ == '__main__':
           for line in r.output.splitlines():
             print('  '+line)
             sys.exit(-1)
+
+
+  print('---[ running checks ]---')
+
+  if ' ' in os.getcwd():
+    # MSYS2 is sensitive to spaces in paths
+    sys.exit('check failed: current path contains spaces')
