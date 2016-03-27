@@ -353,9 +353,9 @@ if __name__ == '__main__':
   # --- helpers ---
 
   if OS64BIT:
-    MSYS2 = LOOT + '/msys64/usr/bin'
+    BASH = LOOT + '/msys64/usr/bin/bash'
   else:
-    MSYS2 = LOOT + '/msys32/usr/bin'
+    BASH = LOOT + '/msys32/usr/bin/bash'
 
   def path2unix(path):
     """ convert Windows path "E:\path" to unix "/e/path" """
@@ -364,7 +364,8 @@ if __name__ == '__main__':
   def bash(command, capture=False, verbose=True):
     """ run command inside MSYS2 environment.
         bash always starts in $HOME directory """
-    cmd = MSYS2 + '/bash --login -c "{}"'.format(command)
+    global BASH
+    cmd = BASH + ' --login -c "{}"'.format(command)
     if verbose:
       print("BASH: " + cmd)
     if capture:
@@ -457,7 +458,7 @@ if __name__ == '__main__':
   run('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
 
   print('')
-  print('---[ running 32-bit build ]---')
+  print('---[ configuring build paths and options ]---')
   print('Boot CWD: ' + os.getcwd())
   print('Bash CWD: ' + bash('pwd', capture=True, verbose=False).output)
 
@@ -465,15 +466,48 @@ if __name__ == '__main__':
   builddir = path2unix(os.getcwd() + '/build')
   workdir = path2unix(os.getcwd() + '/mingw-builds')
 
-  cmd32bit = "cd " + workdir
-  cmd32bit += """; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
-    --mtune-x32='generic' --buildroot=/tmp/i686 --rev=201603 --rt-version=trunk \
-    --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only"""
+  
+  cmdbase = "cd " + workdir
+  cmdbase += "; ./build --mode=gcc-5.3.0 --static-gcc --threads=win32 --enable-languages=c,c++,fortran "
+  cmdbase += " --rt-version=trunk --rev=201603 "
 
-  # on 32bit platforms it fails without this option
+  cmd32build = cmdbase + " --arch=i686 --march-x32='pentium4' --mtune-x32='generic' --exceptions=sjlj "
+  cmd32build += " --buildroot={}/i686".format(builddir)
   if not OS64BIT:
-    cmd32bit += " --no-multilib"
+    # [ ] explain what is multilib
+    print('WARNING: Host platform is 32-bit, adding --no-multilib to build options')
+    cmd32build += " --no-multilib"
+  cmd32fetch = cmd32build + " --fetch-only "
 
-  # set build directory to be different from $HOME/mingw-builds
-  cmd32bit += " --buildroot=" + builddir
-  bash(cmd32bit)
+  cmd64build = cmdbase + "--arch=x86_64 --march-x64='x86-64 --mtune-x64='generic' --exceptions=seh "
+  cmd64build += " --buildroot={}/x86_64".format(builddir)
+  cmd64fetch = cmd64build + " --fetch-only "
+
+
+  print('')
+  print('---[ fetching toolchains and writing .bat files ]---')
+
+  def batman(batfile, command):
+    global BASH
+    content = """\
+@echo off
+{bash} --login -c "{cmd}" %*
+""".format(bash=BASH, cmd=command)
+    open(batfile, 'wb').write(content)
+
+  print('')
+  print('--- fetch and setup 32-bit toolchain ---')
+  bash(cmd32fetch)
+  batman(ROOT + '/build32.bat', cmd32build)
+
+  print('')
+  print('--- fetch and setup 64-bit toolchain ---')
+  if not OS64BIT:
+    print('WARNING: Host platform is 32-bit, skipping 64-bit build...')
+  else:
+    bash(cmd64fetch)
+    batman(ROOT + '/build64.bat', cmd64build)
+
+  print('')
+  print('Run build32.bat or build64.bat to build the toolchain.')
+  print('Done.')
