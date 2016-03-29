@@ -47,7 +47,8 @@ To download only (to build later):
 
     ./build --mode=gcc-5.3.0 --static-gcc --arch=x86_64 --march-x64='x86-64' \
         --mtune-x64='generic' --rev=201603 --rt-version=trunk --threads=win32 \
-        --exceptions=seh --enable-languages=c,c++,fortran --fetch-only
+        --exceptions=seh --enable-languages=c,c++,fortran \
+        --buildroot=/tmp/x86_64 --fetch-only
 
 To download and build all at once:
 
