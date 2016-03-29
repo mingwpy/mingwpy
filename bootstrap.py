@@ -471,17 +471,20 @@ if __name__ == '__main__':
   cmdbase += "; ./build --mode=gcc-5.3.0 --static-gcc --threads=win32 --enable-languages=c,c++,fortran "
   cmdbase += " --rt-version=trunk --rev=201603 "
 
-  cmd32build = cmdbase + " --arch=i686 --march-x32='pentium4' --mtune-x32='generic' --exceptions=sjlj "
-  cmd32build += " --buildroot={}/i686".format(builddir)
-  if not OS64BIT:
-    # [ ] explain what is multilib
-    print('WARNING: Host platform is 32-bit, adding --no-multilib to build options')
-    cmd32build += " --no-multilib"
-  cmd32fetch = cmd32build + " --fetch-only "
+  cmd32base = cmdbase + " --arch=i686 --march-x32='pentium4' --mtune-x32='generic' --exceptions=sjlj "
+  cmd32base += " --buildroot={}/i686".format(builddir)
+  cmd32fetch = cmd32base + " --fetch-only "
+  # multilib is disabled for all configurations
+  #if not OS64BIT:
+  #  # CC multilib allows installation of 32-bit and 64-bit libraries in parallel
+  #  print('WARNING: Host platform is 32-bit, adding --no-multilib to build options')
+  #  cmd32build += " --no-multilib"
+  cmd32build = cmd32base + " --bootstrap --no-multilib --bin-compress --jobs=4"
 
-  cmd64build = cmdbase + "--arch=x86_64 --march-x64='x86-64 --mtune-x64='generic' --exceptions=seh "
-  cmd64build += " --buildroot={}/x86_64".format(builddir)
-  cmd64fetch = cmd64build + " --fetch-only "
+  cmd64base = cmdbase + "--arch=x86_64 --march-x64='x86-64 --mtune-x64='generic' --exceptions=seh "
+  cmd64base += " --buildroot={}/x86_64".format(builddir)
+  cmd64fetch = cmd64base + " --fetch-only "
+  cmd64build = cmd64base + " --bootstrap --no-multilib --bin-compress --jobs=4"
 
 
   print('')
