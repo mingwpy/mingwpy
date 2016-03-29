@@ -494,7 +494,7 @@ if __name__ == '__main__':
     global BASH
     content = """\
 @echo off
-{bash} --login -c "{cmd}" %*
+{bash} --login -c "{cmd} %*"
 """.format(bash=BASH, cmd=command)
     open(batfile, 'wb').write(content)
 
