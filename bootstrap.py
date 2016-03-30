@@ -441,11 +441,19 @@ if __name__ == '__main__':
 
   print('---[ configuring MSYS2 ]---')
 
-  # do first time setup
+  print('bootstrap: -- first time setup --')
   bash('exit')
-  # update pacman database
-  bash('pacman -Sy')
-  # install packages
+
+  # update MSYS2
+  print('\nbootstrap: -- updating pacman --')
+  bash('pacman -Sy --noconfirm pacman')
+
+  print('\nbootstrap: -- updating core system --')
+  print('bootstrap: don\'t pay attention to "terminate MSYS2" messages')
+  print('bootstrap: termination is done automatically by this script')
+  bash('pacman -Su --noconfirm')
+
+  print('\nbootstrap: -- installing packages --')
   res = bash('pacman -S --needed --noconfirm git subversion tar zip autoconf p7zip make patch automake libtool bison gettext-devel wget sshpass texinfo')
 
   # check that gcc is not installed
