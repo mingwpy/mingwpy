@@ -56,8 +56,10 @@ filespec = [
     url='http://downloads.sourceforge.net/sevenzip/7za920.zip',
     check='7zip'
   ),
+]
 
-  # tools needed to build gcc and friends
+# tools needed to build gcc and friends
+filespec32 = filespec + [
   dict(
     filename='msys2-base-i686-20160205.tar.xz',
     hashsize='2aa85b8995c8ab6fb080e15c8ed8b1195d7fc0f1 45676948',
@@ -66,14 +68,26 @@ filespec = [
   ),
 ]
 
+# tools needed to build gcc and friends
+filespec64 = filespec + [
+  dict(
+    filename='msys2-base-x86_64-20160205.tar.xz',
+    hashsize='bd689438e6389064c0b22f814764524bb974ae5b 44942956',
+    url='https://prdownloads.sourceforge.net/msys2/msys2-base-x86_64-20160205.tar.xz',
+    check='msys64',
+  ),
+]
+
 
 # ------------------------------ Code ---
 
 # --- create .locally/ subdir ---
 import os
+import platform
 import sys
 
 PY3K = sys.version_info >= (3, 0)
+OS64BIT = platform.machine().endswith('64')
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 LOOT = os.path.join(ROOT, '.locally/')
@@ -336,9 +350,39 @@ def run_capture_limited(command, maxlines=20000):
 
 if __name__ == '__main__':
 
+  # --- helpers ---
+
+  if OS64BIT:
+    BASH = LOOT + '/msys64/usr/bin/bash'
+  else:
+    BASH = LOOT + '/msys32/usr/bin/bash'
+
+  def path2unix(path):
+    """ convert Windows path "E:\path" to unix "/e/path" """
+    return '/' + path[0].lower() + path[2:].replace('\\', '/')
+
+  def bash(command, capture=False, verbose=True):
+    """ run command inside MSYS2 environment.
+        bash always starts in $HOME directory """
+    global BASH
+    cmd = BASH + ' --login -c "{}"'.format(command)
+    if verbose:
+      print("BASH: " + cmd)
+    if capture:
+      return run_capture_limited(cmd)
+    else:
+      return run(cmd)
+
+  # /-- helpers ---
+
+
   print('---[ download dependencies ]---')
 
-  getsecure(LOOT, filespec)
+  if OS64BIT:
+    speccy = filespec64
+  else:
+    speccy = filespec32
+  getsecure(LOOT, speccy)
 
   print('---[ unpack dependencies ]---')
 
@@ -357,7 +401,7 @@ if __name__ == '__main__':
   cmd7zip = os.path.normpath(LOOT + '7zip/7za.exe')
 
   # unpacking everything else
-  for entry in filespec:
+  for entry in speccy:
     fname = entry['filename']
 
     targetdir = LOOT
@@ -395,17 +439,22 @@ if __name__ == '__main__':
     # MSYS2 is sensitive to spaces in paths
     sys.exit('check failed: current path contains spaces')
 
-  print('---[ configure MSYS2 ]---')
-  MSYS2 = LOOT + '/msys32/usr/bin'
-  def bash(command):
-    return run(MSYS2 + '/bash --login -c "{}"'.format(command))
+  print('---[ configuring MSYS2 ]---')
 
-  # do first time setup
+  print('bootstrap: -- first time setup --')
   bash('exit')
-  # update pacman database
-  bash('pacman -Sy')
-  # install packages
-  res = bash('pacman -S --noconfirm git subversion tar zip p7zip make patch automake libtool bison gettext-devel wget sshpass texinfo')
+
+  # update MSYS2
+  print('\nbootstrap: -- updating pacman --')
+  bash('pacman -Sy --noconfirm pacman')
+
+  print('\nbootstrap: -- updating core system --')
+  print('bootstrap: don\'t pay attention to "terminate MSYS2" messages')
+  print('bootstrap: termination is done automatically by this script')
+  bash('pacman -Su --noconfirm')
+
+  print('\nbootstrap: -- installing packages --')
+  res = bash('pacman -S --needed --noconfirm git subversion tar zip autoconf p7zip make patch automake libtool bison gettext-devel wget sshpass texinfo')
 
   # check that gcc is not installed
   res = bash('gcc -v 2> /dev/null')
@@ -414,10 +463,62 @@ if __name__ == '__main__':
 
   print('')
   print('---[ cloning custom mingw-build scripts ]---')
-  bash('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
+  run('git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git')
 
   print('')
-  print('---[ running 32-bit build ]---')
-  bash("""cd mingw-builds; ./build --mode=gcc-5.3.0 --static-gcc --arch=i686 --march-x32='pentium4' \
-    --mtune-x32='generic' --buildroot=/tmp/i686 --rev=201603 --rt-version=trunk \
-    --threads=win32 --exceptions=sjlj --enable-languages=c,c++,fortran --fetch-only""")
+  print('---[ configuring build paths and options ]---')
+  print('Boot CWD: ' + os.getcwd())
+  print('Bash CWD: ' + bash('pwd', capture=True, verbose=False).output)
+
+  # calculating names to change working directory in MSYS2
+  builddir = path2unix(os.getcwd() + '/build')
+  workdir = path2unix(os.getcwd() + '/mingw-builds')
+
+  
+  cmdbase = "cd " + workdir
+  cmdbase += "; ./build --mode=gcc-5.3.0 --static-gcc --threads=win32 --enable-languages=c,c++,fortran "
+  cmdbase += " --rt-version=trunk --rev=201603 "
+
+  cmd32base = cmdbase + " --arch=i686 --march-x32='pentium4' --mtune-x32='generic' --exceptions=sjlj "
+  cmd32base += " --buildroot={}/i686".format(builddir)
+  cmd32fetch = cmd32base + " --fetch-only "
+  # multilib is disabled for all configurations
+  #if not OS64BIT:
+  #  # CC multilib allows installation of 32-bit and 64-bit libraries in parallel
+  #  print('WARNING: Host platform is 32-bit, adding --no-multilib to build options')
+  #  cmd32build += " --no-multilib"
+  cmd32build = cmd32base + " --bootstrap --no-multilib --bin-compress --jobs=4"
+
+  cmd64base = cmdbase + "--arch=x86_64 --march-x64='x86-64 --mtune-x64='generic' --exceptions=seh "
+  cmd64base += " --buildroot={}/x86_64".format(builddir)
+  cmd64fetch = cmd64base + " --fetch-only "
+  cmd64build = cmd64base + " --bootstrap --no-multilib --bin-compress --jobs=4"
+
+
+  print('')
+  print('---[ fetching toolchains and writing .bat files ]---')
+
+  def batman(batfile, command):
+    global BASH
+    content = """\
+@echo off
+{bash} --login -c "{cmd} %*"
+""".format(bash=BASH, cmd=command)
+    open(batfile, 'wb').write(content)
+
+  print('')
+  print('--- fetch and setup 32-bit toolchain ---')
+  bash(cmd32fetch)
+  batman(ROOT + '/build32.bat', cmd32build)
+
+  print('')
+  print('--- fetch and setup 64-bit toolchain ---')
+  if not OS64BIT:
+    print('WARNING: Host platform is 32-bit, skipping 64-bit build...')
+  else:
+    bash(cmd64fetch)
+    batman(ROOT + '/build64.bat', cmd64build)
+
+  print('')
+  print('Run build32.bat or build64.bat to build the toolchain.')
+  print('Done.')
