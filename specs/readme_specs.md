@@ -7,6 +7,7 @@ this is a temporary folder with additional specs and resource files needed for t
 
 
 =========HOWTO Use the GCC specs file========
+
 You may use a text editor of your choice to inspect it. It may be confusing at first, but there are many places of interest. To use the specs file, invoke gcc with -specs=<path_to_specs_file> or place it at "/mingw/lib/gcc/mingw32/<version>/specs" to make GCC use it by default, where <version> refers to the GCC version installed.
 
 More info：
