@@ -1,0 +1,30 @@
+# vim ft=yaml
+# CI on Windows via appveyor
+
+environment:
+  global:
+    MSYS2_ROOT: c:\msys64
+    WHEELHOUSE_UPLOADER_USERNAME: travis-worker
+    WHEELHOUSE_UPLOADER_SECRET:
+      secure: 9s0gdDGnNnTt7hvyNpn0/ZzOMGPdwPp2SewFTfGzYk7uI+rdAN9rFq2D1gAP4NQh
+
+  matrix:
+    - BITS: 32
+    - BITS: 64
+
+build_script:
+    - bash build_mingwpy.sh
+
+artifacts:
+    - path: builds\*.*
+
+on_success:
+  # Upload the generated package to Rackspace
+  # On Windows, Apache Libcloud cannot find a standard CA cert bundle so we
+  # disable the ssl checks.
+  - set PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+  - pip install wheelhouse-uploader
+  - python -m wheelhouse_uploader upload
+    --no-ssl-check --local-folder=builds
+    --no-update-index
+    wheels
