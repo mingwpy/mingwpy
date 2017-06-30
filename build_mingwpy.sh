@@ -6,6 +6,7 @@
 BITS=${BITS:-64}
 buildroot="${PWD}/build"
 rm -rf $buildroot
+mkdir $buildroot
 
 if [ "$BITS" == "64" ]; then
     mw_arch=x86_64
@@ -24,7 +25,7 @@ pacman -Rs --noconfirm gcc gcc-fortran
 git clone -b mingwpy-dev https://github.com/mingwpy/mingw-builds.git
 
 cd mingw-builds
-./build --mode=gcc-5.3.0 --static-gcc --arch=$mw_arg --march-x64="$mw_march" \
+./build --mode=gcc-5.3.0 --static-gcc --arch=$mw_arch --march-x64="$mw_march" \
     --mtune-x$BITS='generic' --rev=201603 --rt-version=trunk --threads=win32 \
     --exceptions=$mw_exceptions --enable-languages=c,c++,fortran \
     --buildroot=$buildroot --bootstrap --no-multilib --bin-compress

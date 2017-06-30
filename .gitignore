@@ -61,5 +61,9 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
+# Editor cruft
+*.swp
+*~
+
 # Builds
 build/
