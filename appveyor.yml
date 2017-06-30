@@ -14,17 +14,3 @@ environment:
 
 build_script:
     - bash build_mingwpy.sh
-
-artifacts:
-    - path: builds\*.*
-
-on_success:
-  # Upload the generated package to Rackspace
-  # On Windows, Apache Libcloud cannot find a standard CA cert bundle so we
-  # disable the ssl checks.
-  - set PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
-  - pip install wheelhouse-uploader
-  - python -m wheelhouse_uploader upload
-    --no-ssl-check --local-folder=builds
-    --no-update-index
-    wheels
