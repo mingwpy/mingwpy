@@ -9,11 +9,22 @@ environment:
       secure: 9s0gdDGnNnTt7hvyNpn0/ZzOMGPdwPp2SewFTfGzYk7uI+rdAN9rFq2D1gAP4NQh
 
   matrix:
-    - BITS: 32
     - BITS: 64
+    - BITS: 32
 
 build_script:
-    - bash build_mingwpy.sh
+    - if "%BUILD_BITS%"=="32" (set PLAT=i686) else (set PLAT=x86_64)
+    - set VC9_ROOT=C:\Users\appveyor\AppData\Local\Programs\Common\Microsoft\Visual C++ for Python\9.0\VC
+    - PATH=%MSYS2_ROOT%\usr\bin;%PATH%
+    # Remove competing gcc / gfortran
+    - pacman -Rs --noconfirm gcc gcc-fortran mingw-w64-%PLAT%-toolchain
+    # zip needed for packing archive
+    - pacman -Sy --noconfirm zip
+    - git submodule update --init --recursive
+    - set MSYSTEM=MINGW%BUILD_BITS%
+    - set START_DIR=%__CD__%
+      # Need --login to process MSYSTEM variable
+    - bash --login %START_DIR%build_mingwpy.sh
 
 on_finish:
   # Note the resulting IP:port address, and use in Microsoft Remote Desktop
