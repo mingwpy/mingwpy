@@ -14,7 +14,6 @@ environment:
 
 build_script:
     - if "%BUILD_BITS%"=="32" (set PLAT=i686) else (set PLAT=x86_64)
-    - set VC9_ROOT=C:\Users\appveyor\AppData\Local\Programs\Common\Microsoft\Visual C++ for Python\9.0\VC
     - PATH=%MSYS2_ROOT%\usr\bin;%PATH%
     # Remove competing gcc / gfortran
     - pacman -Rs --noconfirm gcc gcc-fortran mingw-w64-%PLAT%-toolchain
