@@ -3,8 +3,11 @@
 # Expects (default)
 #  BITS: 64
 
+# The directory from which script was called
+our_wd=$(cygpath "$START_DIR")
+
 BITS=${BITS:-64}
-buildroot="${PWD}/build"
+buildroot="${our_wd}/build"
 rm -rf $buildroot
 mkdir $buildroot
 
@@ -19,11 +22,9 @@ else
 fi
 
 pacman -Sy --noconfirm git svn zip tar autoconf make libtool automake p7zip \
-    patch bison gettext-devel wget sshpass texinfo
+    patch bison gettext-devel wget sshpass texinfo dejagnu
 pacman -Rs --noconfirm gcc gcc-fortran
 
-# The directory from which script was called
-our_wd=$(cygpath "$START_DIR")
 cd $our_wd/mingw-builds
 ./build --mode=gcc-5.3.0 --static-gcc --arch=$mw_arch --march-x64="$mw_march" \
     --mtune-x$BITS='generic' --rev=201603 --rt-version=trunk --threads=win32 \
