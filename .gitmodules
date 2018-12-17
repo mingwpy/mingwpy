@@ -1,0 +1,3 @@
+[submodule "mingw-builds"]
+	path = mingw-builds
+	url = https://github.com/mingwpy/mingw-builds
