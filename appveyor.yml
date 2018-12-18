@@ -4,6 +4,8 @@
 environment:
   global:
     MSYS2_ROOT: c:\msys64
+    GCC_VER: 8.2.0
+    REV_NO: 201812
     WHEELHOUSE_UPLOADER_USERNAME: travis-worker
     WHEELHOUSE_UPLOADER_SECRET:
       secure: 9s0gdDGnNnTt7hvyNpn0/ZzOMGPdwPp2SewFTfGzYk7uI+rdAN9rFq2D1gAP4NQh
@@ -13,14 +15,12 @@ environment:
     - BITS: 32
 
 build_script:
-    - if "%BUILD_BITS%"=="32" (set PLAT=i686) else (set PLAT=x86_64)
     - PATH=%MSYS2_ROOT%\usr\bin;%PATH%
-    # Remove competing gcc / gfortran
-    - pacman -Rs --noconfirm gcc gcc-fortran mingw-w64-%PLAT%-toolchain
     # zip needed for packing archive
     - pacman -Sy --noconfirm zip
     - git submodule update --init --recursive
     - set MSYSTEM=MINGW%BUILD_BITS%
+    # START_DIR tells build script where to find this directory
     - set START_DIR=%__CD__%
       # Need --login to process MSYSTEM variable
     - bash --login %START_DIR%build_mingwpy.sh
