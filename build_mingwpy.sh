@@ -32,7 +32,7 @@ else
 fi
 
 # Remove competing gcc / gfortrans
-pacman -Rs --noconfirm gcc gcc-fortran mingw-w64-%PLAT%-toolchain
+pacman -Rs --noconfirm gcc gcc-fortran mingw-w64-${mw_arch}-toolchain
 
 cd $our_wd/mingw-builds
 ./build --mode=gcc-${GCC_VER} \
