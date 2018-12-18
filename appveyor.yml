@@ -24,7 +24,3 @@ build_script:
     - set START_DIR=%__CD__%
       # Need --login to process MSYSTEM variable
     - bash --login %START_DIR%build_mingwpy.sh
-
-on_finish:
-  # Note the resulting IP:port address, and use in Microsoft Remote Desktop
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
