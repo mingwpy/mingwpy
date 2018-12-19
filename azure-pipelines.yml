@@ -7,5 +7,17 @@ jobs:
 - job: Windows
   pool:
     vmImage: 'vs2017-win2016'
+  strategy:
+    maxParallel: 10
+    matrix:
+      x64:
+        ARCH: 'x64'
+      x86:
+        ARCH: 'x86'
   steps:
-  - script: echo hello from Windows
+  - script: |
+      :: We'll see
+      dir c:\
+  - powershell: |
+      :: Maybe
+      ls c:\
