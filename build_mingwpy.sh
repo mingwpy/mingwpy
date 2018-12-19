@@ -43,7 +43,7 @@ cd $our_wd/mingw-builds
     --arch=$mw_arch --march-x64="$mw_march" \
     --mtune-x$BITS='generic' \
     --rev=${REV_NO} \
-    --rt-version=v6 \
+    --rt-version=trunk \
     --threads=win32  --exceptions=$mw_exceptions \
     --enable-languages=c,c++,fortran \
     --buildroot=$buildroot --bootstrap --no-multilib --bin-compress
