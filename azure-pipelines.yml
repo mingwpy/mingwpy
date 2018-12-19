@@ -16,8 +16,12 @@ jobs:
         ARCH: 'x86'
   steps:
   - script: |
-      :: We'll see
+      rem We'll see
       dir c:\
+  - script: |
+      rem Get 7zip
+      choco install 7zip.install
+      xz --help
   - powershell: |
-      :: Maybe
+      # Maybe
       ls c:\
