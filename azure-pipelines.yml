@@ -10,14 +10,12 @@ jobs:
   strategy:
     maxParallel: 10
     matrix:
-      x64:
-        ARCH: 'x64'
-      x86:
-        ARCH: 'x86'
+      64:
+        BITS: 64
   steps:
   - script: |
-      rem We'll see
-      dir c:\
+      rem List current directory
+      dir
   - script: |
       rem Get, run msys2 bash
       choco install 7zip.install
@@ -29,6 +27,12 @@ jobs:
       bash -c 'echo In Bash from cmd'
     workingDirectory: C:\Temp
 
-  - powershell: |
-      # Maybe
-      bash -c 'echo In Bash from powershell'
+  - script: |
+      rem Run build_mingpy script
+      set GCC_VER=8.2.0
+      set REV_NO=201812
+      set MSYSTEM=MINGW%BUILD_BITS%
+      rem START_DIR tells build script where to find this directory
+      set START_DIR=%__CD__%
+      rem Need --login to process MSYSTEM variable
+      bash --login %START_DIR%build_mingwpy.sh
