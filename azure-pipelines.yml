@@ -28,10 +28,18 @@ jobs:
     workingDirectory: C:\Temp
 
   - script: |
+      PATH
+      where bash
+      bash --login -c 'echo First login'
+      bash --login -c 'echo $PATH'
+      bash --login -c 'pacman'
+
+  - script: |
       rem Run build_mingpy script
       set GCC_VER=8.2.0
       set REV_NO=201812
-      set MSYSTEM=MINGW%BUILD_BITS%
+      git submodule update --init --recursive
+      set MSYSTEM=MINGW%BITS%
       rem START_DIR tells build script where to find this directory
       set START_DIR=%__CD__%
       rem Need --login to process MSYSTEM variable
