@@ -13,8 +13,13 @@ else  # Or maybe we're sourcing directly
     our_wd=$PWD
 fi
 
+# Version of gcc to build
 GCC_VER=${GCC_VER:-8.2.0}
+# Revision number to append to build name
 REV_NO=${REV_NO:-201812}
+# Number of threads to use for make step
+N_THREADS=${N_THREADS:-4}
+# 32 or 64 bits?
 BITS=${BITS:-64}
 
 buildroot="${our_wd}/build"
@@ -47,6 +52,7 @@ cd $our_wd/mingw-builds
     --rt-version=trunk \
     --threads=win32  --exceptions=$mw_exceptions \
     --enable-languages=c,c++,fortran \
-    --buildroot=$buildroot --bootstrap --no-multilib --bin-compress
+    --buildroot=$buildroot --bootstrap --no-multilib --bin-compress \
+    --jobs=${N_THREADS}
 
 ls $buildroot

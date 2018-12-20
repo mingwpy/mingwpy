@@ -3,38 +3,44 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+variables:
+  GCC_VER: 8.2.0
+  REV_NO: 201812
+  N_THREADS: 10
+
 jobs:
 - job: Windows
   pool:
     vmImage: 'vs2017-win2016'
   strategy:
-    maxParallel: 10
+    maxParallel: $(N_THREADS)
     matrix:
       64:
         BITS: 64
+  timeoutInMinutes: 360
   steps:
   - script: |
-      rem List current directory
-      dir
-  - script: |
-      rem Get msys2 bash
+      :: Get msys2 bash
       choco install 7zip.install
       choco install curl
       curl -L http://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20181211.tar.xz -o msys2.tar.xz
       7z x msys2.tar.xz
       7z x msys2.tar
-      rem See: https://stackoverflow.com/questions/52631143/cannot-change-the-path-in-a-script-task-in-azure-pipelines
+      :: See: https://stackoverflow.com/questions/52631143/cannot-change-the-path-in-a-script-task-in-azure-pipelines
       ECHO ##vso[task.prependpath]%__CD__%\msys64\usr\bin
     workingDirectory: C:\Temp
+    displayName: 'Get msys2'
 
   - script: |
-      rem Run build_mingpy script
-      set GCC_VER=8.2.0
-      set REV_NO=201812
+      :: Run build_mingwpy script
       git submodule update --init --recursive
       set MSYSTEM=MINGW%BITS%
-      rem START_DIR tells build script where to find this directory
+      :: START_DIR tells build script where to find this directory
       set START_DIR=%__CD__%
-      rem Need --login to process MSYSTEM variable
+      :: Need --login to process MSYSTEM variable
       bash --login -c 'echo First login'
       bash --login %START_DIR%build_mingwpy.sh
+    displayName: 'Build mingwpy'
+
+  - script: |
+      dir build

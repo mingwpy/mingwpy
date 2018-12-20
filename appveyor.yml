@@ -1,6 +1,10 @@
 # vim ft=yaml
 # CI on Windows via appveyor
 
+branches:
+  except:
+    - /.*azure.*/
+
 environment:
   global:
     MSYS2_ROOT: c:\msys64
