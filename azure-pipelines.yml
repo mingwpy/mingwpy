@@ -25,15 +25,8 @@ jobs:
       7z x msys2.tar
       rem See: https://stackoverflow.com/questions/52631143/cannot-change-the-path-in-a-script-task-in-azure-pipelines
       ECHO ##vso[task.prependpath]%__CD__%\msys64\usr\bin
-      bash -c 'echo In Bash from cmd'
-    workingDirectory: C:\Temp
-
-  - script: |
-      PATH
-      where bash
       bash --login -c 'echo First login'
-      bash --login -c 'echo $PATH'
-      bash --login -c 'pacman'
+    workingDirectory: C:\Temp
 
   - script: |
       rem Run build_mingpy script
