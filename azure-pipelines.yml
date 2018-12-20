@@ -6,14 +6,14 @@
 variables:
   GCC_VER: 8.2.0
   REV_NO: 201812
-  N_THREADS: 10
+  N_THREADS: 8
 
 jobs:
 - job: Windows
   pool:
     vmImage: 'vs2017-win2016'
   strategy:
-    maxParallel: $(N_THREADS)
+    maxParallel: 10
     matrix:
       64:
         BITS: 64
