@@ -35,6 +35,7 @@ fi
 pacman -Rs --noconfirm gcc gcc-fortran mingw-w64-${mw_arch}-toolchain
 
 # Install some needed packages
+pacman -Sy --noconfirm git subversion tar zip make patch automake autoconf libtool bison gettext-devel texinfo autogen
 pacman -Sy --noconfirm p7zip sshpass dejagnu
 
 cd $our_wd/mingw-builds

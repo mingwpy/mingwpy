@@ -17,7 +17,7 @@ jobs:
       rem List current directory
       dir
   - script: |
-      rem Get, run msys2 bash
+      rem Get msys2 bash
       choco install 7zip.install
       choco install curl
       curl -L http://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20181211.tar.xz -o msys2.tar.xz
@@ -25,7 +25,6 @@ jobs:
       7z x msys2.tar
       rem See: https://stackoverflow.com/questions/52631143/cannot-change-the-path-in-a-script-task-in-azure-pipelines
       ECHO ##vso[task.prependpath]%__CD__%\msys64\usr\bin
-      bash --login -c 'echo First login'
     workingDirectory: C:\Temp
 
   - script: |
@@ -37,4 +36,5 @@ jobs:
       rem START_DIR tells build script where to find this directory
       set START_DIR=%__CD__%
       rem Need --login to process MSYSTEM variable
+      bash --login -c 'echo First login'
       bash --login %START_DIR%build_mingwpy.sh
