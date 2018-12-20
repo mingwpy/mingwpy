@@ -17,15 +17,18 @@ jobs:
       rem List current directory
       dir
   - script: |
-      rem Get, run msys2 bash
+      rem Get msys2 bash
       choco install 7zip.install
       choco install curl
       curl -L http://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20181211.tar.xz -o msys2.tar.xz
       7z x msys2.tar.xz
       7z x msys2.tar
-      PATH=%__CD__%\msys64\usr\bin;%PATH%
-      bash -c 'echo In Bash from cmd'
     workingDirectory: C:\Temp
+    displayName: 'Get msys2'
+
+  - powershell: |
+      Write-Host "##vso[task.setvariable variable=PATH;]${PWD}\msys64\usr\bin;${env:PATH}";
+    displayName: 'Add msys2 to PATH'
 
   - script: |
       PATH
