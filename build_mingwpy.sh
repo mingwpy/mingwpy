@@ -2,7 +2,7 @@
 # Script to build mingwpy on Appveyor systems
 # Expects (default)
 #  START_DIR: ($PWD if not set)
-#  GCC_VER: 8.2.0
+#  GCC_VER: 5.3.0
 #  REV_NO: 201812
 #  BITS: 64
 
@@ -14,7 +14,7 @@ else  # Or maybe we're sourcing directly
 fi
 
 # Version of gcc to build
-GCC_VER=${GCC_VER:-8.2.0}
+GCC_VER=${GCC_VER:-5.3.0}
 # Revision number to append to build name
 REV_NO=${REV_NO:-201812}
 # Number of threads to use for make step
